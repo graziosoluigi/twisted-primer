@@ -43,13 +43,19 @@ class GameSpace:
 
 		pygame.key.set_repeat()
 
+		t = Thread(target=reactor.run, args=(False, ))
+		t.start()
 		while 1:
 			self.clock.tick(60);
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
+					print("QUIT")
+					t.join()
+					reactor.stop()
 					sys.exit()
-				#elif event.type == MOUSEBUTTONDOWN:
-				#print("Player ", player_number, ": Mouse Click")
+
+				elif event.type == MOUSEBUTTONDOWN:
+					print("Player: Mouse Click")
 
 
 			self.screen.fill(self.black);
