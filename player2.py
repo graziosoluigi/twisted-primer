@@ -2,7 +2,7 @@
 #	May 5th, 2017
 #	Twisted Pygame (player2.py)
 
-import sys, pygame
+import sys, pygame, os
 from pygame.locals import *
 from twisted.internet.protocol import ClientFactory
 from twisted.internet.protocol import Protocol
@@ -13,16 +13,25 @@ from threading import Thread
 
 #Connection~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class GameConnection(Protocol):
+	def __init__(self, gs):
+		self.gs = gs
+
 	def connectionMade(self):
 		print "Player 2: Connection Made"
+		self.t = Thread(target=gs.main, args=(self, )).start()
+		
 
 	def dataReceived(self, data):
-		print "Player 2: Got Data", data
+		print "Data:", data
+		if data == "quit":
+			pygame.quit()
+			reactor.stop()
+			os._exit(1)
 
 
 class GameConnectionFactory(ClientFactory):
-	def __init__(self):
-		self.myconn = GameConnection()
+	def __init__(self, gs):
+		self.myconn = GameConnection(gs)
 
 	def buildProtocol(self, addr):
 		return self.myconn
@@ -30,13 +39,12 @@ class GameConnectionFactory(ClientFactory):
 #GameSpace~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class GameSpace:
-	def main(self):
+	def main(self, conn):
+		self.conn = conn
 		pygame.init()
 		self.size = self.width, self.height = 640, 420
 		self.black = 0, 0, 0
 		self.screen = pygame.display.set_mode(self.size)
-
-		reactor.run()
 
 		#init all game objects (shooter and goalkeeper)
 
@@ -44,19 +52,17 @@ class GameSpace:
 
 		pygame.key.set_repeat()
 
-		t = Thread(target=reactor.run, args=(False, ))
-		t.start()
 		while 1:
 			self.clock.tick(60);
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
-					print("QUIT")
-					t.join()
 					reactor.stop()
-					sys.exit()
-
+					pygame.quit()
+					conn.transport.write("quit")
+					os._exit(1)
 				elif event.type == MOUSEBUTTONDOWN:
-					print("Player: Mouse Click")
+					print("Player 2: Mouse Click")
+					conn.transport.write("Click on P2")
 
 
 
@@ -67,8 +73,8 @@ class GameSpace:
 
 
 if __name__ == "__main__":
-	reactor.connectTCP("ash.campus.nd.edu", 40025, GameConnectionFactory())
 	gs = GameSpace();
-	gs.main();
-	#reactor.run()
+	reactor.connectTCP("ash.campus.nd.edu", 40025, GameConnectionFactory(gs))
+	#gs.main();
+	reactor.run()
 
