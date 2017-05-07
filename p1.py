@@ -3,6 +3,7 @@
 #	Twisted Pygame (player1.py)
 
 import sys, pygame, os
+from helper import *
 from pygame.locals import *
 from twisted.internet.protocol import Factory
 from twisted.internet.protocol import Protocol
@@ -42,12 +43,16 @@ class GameSpace:
 		self.conn = conn
 		pygame.init()
 		self.size = self.width, self.height = 640, 420
-		self.black = 0, 0, 0
+		self.skyblue = 30, 144, 255
 		self.screen = pygame.display.set_mode(self.size)
+                self.background = loadImage("background.jpg")
 
 		#init all game objects (shooter and goalkeeper)
 		self.clock = pygame.time.Clock()
                 self.sprites = pygame.sprite.Group()
+                self.ball = Ball(self)
+                self.sprites.add(self.ball)
+
                 self.scored = False
                 
 
@@ -66,10 +71,11 @@ class GameSpace:
 					print("Player 1: Mouse Click")
 					conn.transport.write("Click on P1")
 
-
-			self.screen.fill(self.black);
-			#self.screen.blit(self.players.image, self.players.rect)
-
+                        
+			self.screen.fill(self.background);
+			self.screen.blit(self.ball.image, self.ball.rect)
+                        #self.sprites.update()
+                        self.sprites.draw(self.screen)
 			pygame.display.flip()
 
 if __name__ == "__main__":
