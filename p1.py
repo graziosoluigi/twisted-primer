@@ -42,10 +42,21 @@ class GameSpace:
 	def main(self, conn):
 		self.conn = conn
 		pygame.init()
+
+                #Screen, Background, and Goal
 		self.size = self.width, self.height = 640, 420
-		self.skyblue = 30, 144, 255
 		self.screen = pygame.display.set_mode(self.size)
-                self.background = loadImage("background.jpg")
+                self.bgImage, self.bgRect = loadImage("background.jpg")
+                w, h = self.bgImage.get_size()
+                self.bgImage = pygame.transform.scale(self.bgImage, (int(w*.5), int(h*.5)))
+                self.bgRect = self.bgImage.get_rect()
+                self.bgRect.center = (320,210)
+                
+                self.goalImage, self.goalRect = loadImage("goal.png")
+                gw, gh = self.goalImage.get_size()
+                self.goalImage = pygame.transform.scale(self.goalImage, (int(gw*.55), int(gh*.55)))
+                self.goalRect = self.goalImage.get_rect()
+                self.goalRect.center = (320,270)
 
 		#init all game objects (shooter and goalkeeper)
 		self.clock = pygame.time.Clock()
@@ -72,8 +83,10 @@ class GameSpace:
 					conn.transport.write("Click on P1")
 
                         
-			self.screen.fill(self.background);
+			#self.screen.fill(self.skyblue);
+                        self.screen.blit(self.bgImage, self.bgRect)
 			self.screen.blit(self.ball.image, self.ball.rect)
+                        self.screen.blit(self.goalImage, self.goalRect)
                         #self.sprites.update()
                         self.sprites.draw(self.screen)
 			pygame.display.flip()

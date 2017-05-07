@@ -44,14 +44,16 @@ class Ball(pygame.sprite.Sprite):
                 w, h = self.image.get_size()
                 self.image = pygame.transform.scale(self.image, (int(w*.2), int(h*.2)))
                 self.rect = self.image.get_rect()
-                self.rect.center = (320,400)
+                self.rect.center = (320,390)
                 self.display = pygame.display.get_surface()
                 self.area = self.image.get_rect()
                 
                 self.speed = 5
                 self.reset()
-
-        #def update(self):
+                self.angle = 0
+        # Handle Aiming of ball to face mouse
+        
+        #def tick(self):
                 #newRect = self.rect.move(self.position)
                 #self.rect = newRect
                 #pygame.event.pump()
