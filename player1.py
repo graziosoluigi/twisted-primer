@@ -44,6 +44,7 @@ class GameSpace:
 		self.size = self.width, self.height = 640, 420
 		self.black = 0, 0, 0
 		self.screen = pygame.display.set_mode(self.size)
+		pygame.display.set_caption("Player 1 (Kicker)", "")
 
 		#init all game objects (shooter and goalkeeper)
 
@@ -70,6 +71,7 @@ class GameSpace:
 
 			pygame.display.flip()
 
+#Main~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if __name__ == "__main__":
 	gs = GameSpace();

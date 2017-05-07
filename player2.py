@@ -45,6 +45,7 @@ class GameSpace:
 		self.size = self.width, self.height = 640, 420
 		self.black = 0, 0, 0
 		self.screen = pygame.display.set_mode(self.size)
+		pygame.display.set_caption("Player 2 (Goalkeeper)", "")
 
 		#init all game objects (shooter and goalkeeper)
 
