@@ -3,6 +3,7 @@
 #	Twisted Pygame (player2.py)
 
 import sys, pygame, os
+from helper import *
 from pygame.locals import *
 from twisted.internet.protocol import ClientFactory
 from twisted.internet.protocol import Protocol
@@ -42,19 +43,38 @@ class GameSpace:
 	def main(self, conn):
 		self.conn = conn
 		pygame.init()
+
+		#Background, screen, and Goal
 		self.size = self.width, self.height = 640, 420
-		self.black = 0, 0, 0
 		self.screen = pygame.display.set_mode(self.size)
 		pygame.display.set_caption("Player 2 (Goalkeeper)", "")
+		self.bgImage, self.bgRect = loadImage("background.jpg")
+		self.bgImage, self.bgRect = scaleImage(self.bgImage, 0.5)
+		self.bgRect.center = (320,210)
+
+		self.goalImage, self.goalRect = loadImage("goal.png")
+		self.goalImage, self.goalRect = scaleImage(self.goalImage, 0.55)
+		self.goalRect.center = (320,270)
 
 		#init all game objects (shooter and goalkeeper)
 
 		self.clock = pygame.time.Clock()
+		self.sprites = pygame.sprite.Group()
+                self.ball = Ball(self)
+		self.gloves = Gloves(self)
+                self.sprites.add(self.ball)
+		self.sprites.add(self.gloves)
+
+		#self.scored = False
+		#^^^ Might only need it in one of the files
 
 		pygame.key.set_repeat()
 
+		self.count = 0
+
 		while 1:
 			self.clock.tick(60);
+			#print self.count
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
 					reactor.stop()
@@ -65,11 +85,15 @@ class GameSpace:
 					print("Player 2: Mouse Click")
 					conn.transport.write("Click on P2")
 
+			self.gloves.tick(self)
 
 
-			self.screen.fill(self.black);
 			#self.screen.blit(self.players.image, self.players.rect)
-
+			self.screen.blit(self.bgImage, self.bgRect)
+			self.screen.blit(self.ball.image, self.ball.rect)
+                        self.screen.blit(self.goalImage, self.goalRect)
+			#self.screen.blit(self.gloves.image, sel)
+			self.sprites.draw(self.screen)
 			pygame.display.flip()
 
 
