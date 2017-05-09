@@ -102,13 +102,17 @@ class Ball(pygame.sprite.Sprite):
                 self.position = (320,390)
 
 	def shot_fn(self, x, y):
-		if self.prev_shotPos == (x, y):
+		if self.prev_shotPos == (x, y) and self.shot == 0:
 			if self.rect.left < 158 or self.rect.right > 485 or self.rect.top < 187 or self.rect.bottom > 362:
 				print "miss"
+				self.shot = 2
 			elif self.gs.gloves.rect.colliderect(self.rect):
 				print "Save"
+				self.shot = 2
 			else:
 				print "goal"
+				self.shot = 1
+			self.gs.conn.transport.write("dec: " + str(self.shot) + " ")
 		else:
 			self.prev_shotPos = (x, y)
 			origPos = self.rect.center
@@ -128,7 +132,7 @@ class Gloves(pygame.sprite.Sprite):
 	def tick(self):
 		'''Gloves tick:		-move gloves based on mouse
 					-sends info to connection'''
-		self.gs.count = gs.count + 1
+		#self.gs.count = gs.count + 1
 		self.rect.center = pygame.mouse.get_pos()
 		#if gs.count > 5 :
 		string = "glove: "+str(self.rect.centerx)+" "+str(self.rect.centery)+" "
@@ -146,9 +150,14 @@ class ScoreBoard(pygame.sprite.Sprite):
 		self.image = pygame.image.load("score.png")
 		self.image, self.rect = scaleImage(self.image, .3)
 		self.rect.center = (320, 50)
+		self.score = [0, 0, 0, 0, 0]
+		self.shot_num = 0
 
 	def tick(self):
-		#print "Not Yet Implemented"
+		if self.gs.ball.shot != 0:
+			self.gs.score[self.shot_num] = self.gs.ball.shot
+
+
 		if self.gs.score[0] == 1:
 			self.shot1Image = pygame.image.load("soccerball.png")
 			self.shot1Image, self.shot1Rect = scaleImage(self.shot1Image, .16)
