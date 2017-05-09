@@ -39,6 +39,7 @@ def scaleImage(image, scale):
 
 class Ball(pygame.sprite.Sprite):
         def __init__(self, gs):
+		self.gs = gs
                 pygame.sprite.Sprite.__init__(self)
                 self.reset()
 
@@ -58,10 +59,12 @@ class Ball(pygame.sprite.Sprite):
                 self.shotPosition = 0, 0
                 self.scale = 0.05
 
+		self.prev_shotPos = 0, 0
+
                 
         # Handle Aiming of ball to face mouse
         
-        def tick(self, gs):
+        def tick(self):
                 if self.shot == 0:
                         x_m, y_m = pygame.mouse.get_pos()
                         (x_p, y_p) = self.rect.center
@@ -73,7 +76,7 @@ class Ball(pygame.sprite.Sprite):
                         self.rect = self.image.get_rect(center = self.rect.center)
                 
                         string = "angle: " + str(self.angle) + " "
-                        gs.conn.transport.write(string)
+                        self.gs.conn.transport.write(string)
                 # Taking shot
                 else:
                         if self.position == (320, 390):
@@ -89,8 +92,7 @@ class Ball(pygame.sprite.Sprite):
                     
                                 
                         string = "position: " + str(self.rect.centerx) + " " + str(self.rect.centery) + " "
-                        gs.conn.transport.write(string)
-                         
+                        self.gs.conn.transport.write(string)
 
         def rotate(self):
                 self.image = pygame.transform.rotate(self.defaultImage, self.angle)
@@ -98,6 +100,23 @@ class Ball(pygame.sprite.Sprite):
 
         def reset(self):
                 self.position = (320,390)
+
+	def shot(self, x, y):
+		if prev_shotPos == (x, y):
+			if self.rect.left < 158 or self.rect.right > 485:
+				print "miss"
+			if self.rect.top < 187 or self.rect.bottom > 362:
+				print "miss"
+			if self.gs.gloves.rect.colliderect(self.rect):
+				print "Save"
+			print "goal"
+		else:
+			prev_shotPos = (x, y)
+			origPos = self.rect.center
+			self.image, self.rect = scaleImage(self.defaultImage, 1-self.scale)
+			self.scale = self.scale + 0.05
+			self.rect.center = (x, y)
+
 
 class Gloves(pygame.sprite.Sprite):
 	def __init__(self, gs):

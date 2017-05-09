@@ -23,7 +23,6 @@ class GameConnection(Protocol):
 		
 
 	def dataReceived(self, data):
-		print "Data:", data
 		if data == "quit":
 			pygame.quit()
 			reactor.stop()
@@ -32,6 +31,9 @@ class GameConnection(Protocol):
 			tmp_str = data.split(" ")
 			self.gs.ball.angle = float(tmp_str[1])
 			self.gs.ball.rotate()
+		if data.find("position: ") != -1:
+			tmp_str = data.split(" ")
+			self.gs.ball.shot(int(tmp_str[0], tmp_str[1])
 
 
 class GameConnectionFactory(ClientFactory):

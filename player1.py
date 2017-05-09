@@ -98,7 +98,7 @@ class GameSpace:
                                                 
                                             
 			self.scoreboard.tick()
-                        self.ball.tick(self)
+                        self.ball.tick()
 
 			#self.screen.blit(self.players.image, self.players.rect)
 			self.screen.blit(self.bgImage, self.bgRect)
