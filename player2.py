@@ -62,11 +62,13 @@ class GameSpace:
 		self.sprites = pygame.sprite.Group()
                 self.ball = Ball(self)
 		self.gloves = Gloves(self)
+		self.scoreboard = ScoreBoard(self)
                 self.sprites.add(self.ball)
 		self.sprites.add(self.gloves)
 
 		#self.scored = False
 		#^^^ Might only need it in one of the files
+		self.score = [1, 2, 2, 0, 0]
 
 		pygame.key.set_repeat()
 
@@ -83,15 +85,22 @@ class GameSpace:
 					os._exit(1)
 				elif event.type == MOUSEBUTTONDOWN:
 					print("Player 2: Mouse Click")
-					conn.transport.write("Click on P2")
+					#conn.transport.write("Click on P2")
 
 			self.gloves.tick(self)
+			self.scoreboard.tick()
 
 
 			#self.screen.blit(self.players.image, self.players.rect)
 			self.screen.blit(self.bgImage, self.bgRect)
 			self.screen.blit(self.ball.image, self.ball.rect)
                         self.screen.blit(self.goalImage, self.goalRect)
+			self.screen.blit(self.scoreboard.image, self.scoreboard.rect)
+			self.screen.blit(self.scoreboard.shot1Image, self.scoreboard.shot1Rect)
+			self.screen.blit(self.scoreboard.shot2Image, self.scoreboard.shot2Rect)
+			self.screen.blit(self.scoreboard.shot3Image, self.scoreboard.shot3Rect)
+			self.screen.blit(self.scoreboard.shot4Image, self.scoreboard.shot4Rect)
+			self.screen.blit(self.scoreboard.shot5Image, self.scoreboard.shot5Rect)
 			#self.screen.blit(self.gloves.image, sel)
 			self.sprites.draw(self.screen)
 			pygame.display.flip()

@@ -26,11 +26,14 @@ class GameConnection(Protocol):
 			pygame.quit()
 			reactor.stop()
 			os._exit(1)
-		if data.find("glove: ") != -1:
-			tmp_str = data.split(" ")
-			x = int(tmp_str[1])
-			y = int(tmp_str[2])
-			self.gs.gloves.move(x, y)
+		try:
+			if self.gs.gloves != None and data.find("glove: ") != -1:
+				tmp_str = data.split(" ")
+				x = int(tmp_str[1])
+				y = int(tmp_str[2])
+				self.gs.gloves.move(x, y)
+		except AttributeError:
+			pass
 
 
 class GameConnectionFactory(Factory):
@@ -55,7 +58,7 @@ class GameSpace:
 		self.bgImage, self.bgRect = loadImage("background.jpg")
 		self.bgImage, self.bgRect = scaleImage(self.bgImage, 0.5)
 		self.bgRect.center = (320,210)
-
+		self.scoreboard = ScoreBoard(self)
 		self.goalImage, self.goalRect = loadImage("goal.png")
 		self.goalImage, self.goalRect = scaleImage(self.goalImage, 0.55)
 		self.goalRect.center = (320,270)
@@ -67,10 +70,12 @@ class GameSpace:
 		self.sprites = pygame.sprite.Group()
                 self.ball = Ball(self)
 		self.gloves = Gloves(self)
+		self.scoreboard = ScoreBoard(self)
                 self.sprites.add(self.ball)
                 self.sprites.add(self.gloves)
 
-		self.scored = False
+		#self.scored = False
+		self.score = [1, 2, 2, 0, 0]
 
 		pygame.key.set_repeat()
 
@@ -86,12 +91,21 @@ class GameSpace:
 				elif event.type == MOUSEBUTTONDOWN:
 					print("Player 1: Mouse Click")
 					conn.transport.write("Click on P1")
+					print("Clicks on:", pygame.mouse.get_pos())
+
+			self.scoreboard.tick()
 
 
 			#self.screen.blit(self.players.image, self.players.rect)
 			self.screen.blit(self.bgImage, self.bgRect)
 			self.screen.blit(self.ball.image, self.ball.rect)
                         self.screen.blit(self.goalImage, self.goalRect)
+			self.screen.blit(self.scoreboard.image, self.scoreboard.rect)
+			self.screen.blit(self.scoreboard.shot1Image, self.scoreboard.shot1Rect)
+			self.screen.blit(self.scoreboard.shot2Image, self.scoreboard.shot2Rect)
+			self.screen.blit(self.scoreboard.shot3Image, self.scoreboard.shot3Rect)
+			self.screen.blit(self.scoreboard.shot4Image, self.scoreboard.shot4Rect)
+			self.screen.blit(self.scoreboard.shot5Image, self.scoreboard.shot5Rect)
 			self.sprites.draw(self.screen)
 			pygame.display.flip()
 
