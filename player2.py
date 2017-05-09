@@ -28,6 +28,10 @@ class GameConnection(Protocol):
 			pygame.quit()
 			reactor.stop()
 			os._exit(1)
+		if data.find("angle: ") != -1:
+			tmp_str = data.split(" ")
+			self.gs.ball.angle = int(tmp_str[1])
+			self.gs.ball.rotate()
 
 
 class GameConnectionFactory(ClientFactory):
