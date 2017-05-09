@@ -94,7 +94,7 @@ class GameSpace:
 					print("Clicks on:", pygame.mouse.get_pos())
 
 			self.scoreboard.tick()
-
+                        self.ball.tick()
 
 			#self.screen.blit(self.players.image, self.players.rect)
 			self.screen.blit(self.bgImage, self.bgRect)

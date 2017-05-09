@@ -38,11 +38,11 @@ def scaleImage(image, scale):
 	return image, image.get_rect()
 
 class Ball(pygame.sprite.Sprite):
-        def __init__(self, environment):
+        def __init__(self, gs):
                 pygame.sprite.Sprite.__init__(self)
                 # default Image
                 self.defaultImage = pygame.image.load("soccerball.png")
-		self.defaultImage = scaleImage(self.defaultImage, 0.2)
+		self.defaultImage, self.defaultImageRect = scaleImage(self.defaultImage, 0.2)
                 # Image
                 self.image, self.rect = loadImage("soccerball.png")
 		self.image, self.rect = scaleImage(self.image, 0.2)
@@ -55,11 +55,28 @@ class Ball(pygame.sprite.Sprite):
                 self.angle = 0
         # Handle Aiming of ball to face mouse
         
-        #def tick(self):
+        def tick(self):
+                # if on ground rotate
+                x_m, y_m = pygame.mouse.get_pos()
+                (x_p, y_p) = self.rect.center
+                
+                # Rotation
+                self.angle = 360 - math.degrees(math.atan2(y_m - y_p, x_m - x_p))            
+                self.image = pygame.transform.rotate(self.defaultImage, self.angle)
+                # Movement
+                self.rect = self.image.get_rect(center = self.rect.center)
+                
+                string = "angle: " +  self.angle + " "
+                gs.conn.transport.write(string)
+
+                # Taking Shot
                 #newRect = self.rect.move(self.position)
                 #self.rect = newRect
                 #pygame.event.pump()
 
+        def rotate(self):
+                self.image = pygame.transform.rotate(self.defaultImage, self.angle)
+                self.rect = self.image.get_rect(center = self.rect.center)
 
         def reset(self):
                 self.position = [320,400]
