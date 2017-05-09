@@ -89,19 +89,23 @@ class GameSpace:
 					conn.transport.write("quit")
 					os._exit(1)
 				elif event.type == MOUSEBUTTONDOWN:
-					print("Player 1: Mouse Click")
-					conn.transport.write("Click on P1")
-					print("Clicks on:", pygame.mouse.get_pos())
-
+					#print("Player 1: Mouse Click")
+					#conn.transport.write("Click on P1")
+					#print("Clicks on:", pygame.mouse.get_pos())
+                                        if self.ball.shot == 0:
+                                                self.ball.shot = 1
+                                                self.ball.shotPosition = pygame.mouse.get_pos()
+                                                
+                                            
 			self.scoreboard.tick()
-                        self.ball.tick()
+                        self.ball.tick(self)
 
 			#self.screen.blit(self.players.image, self.players.rect)
 			self.screen.blit(self.bgImage, self.bgRect)
 			self.screen.blit(self.ball.image, self.ball.rect)
                         self.screen.blit(self.goalImage, self.goalRect)
 			self.screen.blit(self.scoreboard.image, self.scoreboard.rect)
-			self.screen.blit(self.scoreboard.shot1Image, self.scoreboard.shot1Rect)
+                        self.screen.blit(self.scoreboard.shot1Image, self.scoreboard.shot1Rect)
 			self.screen.blit(self.scoreboard.shot2Image, self.scoreboard.shot2Rect)
 			self.screen.blit(self.scoreboard.shot3Image, self.scoreboard.shot3Rect)
 			self.screen.blit(self.scoreboard.shot4Image, self.scoreboard.shot4Rect)

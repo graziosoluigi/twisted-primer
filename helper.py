@@ -40,9 +40,11 @@ def scaleImage(image, scale):
 class Ball(pygame.sprite.Sprite):
         def __init__(self, gs):
                 pygame.sprite.Sprite.__init__(self)
+                self.reset()
+
                 # default Image
                 self.defaultImage = pygame.image.load("soccerball.png")
-		self.defaultImage, self.defaultImageRect = scaleImage(self.defaultImage, 0.2)
+		self.defaultImage, self.defaultImageRect = scaleImage(self.defaultImage, 0.2)   
                 # Image
                 self.image, self.rect = loadImage("soccerball.png")
 		self.image, self.rect = scaleImage(self.image, 0.2)
@@ -50,37 +52,52 @@ class Ball(pygame.sprite.Sprite):
                 self.display = pygame.display.get_surface()
                 self.area = self.image.get_rect()
                 
-                self.speed = 5
-                self.reset()
+                self.speed = [0, 0]
                 self.angle = 0
+                self.shot = 0
+                self.shotPosition = 0, 0
+                self.scale = 0.05
+
+                
         # Handle Aiming of ball to face mouse
         
-        def tick(self):
-                # if on ground rotate
-                x_m, y_m = pygame.mouse.get_pos()
-                (x_p, y_p) = self.rect.center
+        def tick(self, gs):
+                if self.shot == 0:
+                        x_m, y_m = pygame.mouse.get_pos()
+                        (x_p, y_p) = self.rect.center
                 
-                # Rotation
-                self.angle = 360 - math.degrees(math.atan2(y_m - y_p, x_m - x_p))            
-                self.image = pygame.transform.rotate(self.defaultImage, self.angle)
-                # Movement
-                self.rect = self.image.get_rect(center = self.rect.center)
+                        # Rotation
+                        self.angle = 360 - math.degrees(math.atan2(y_m - y_p, x_m - x_p))            
+                        self.image = pygame.transform.rotate(self.defaultImage, self.angle)
+                        # Movement
+                        self.rect = self.image.get_rect(center = self.rect.center)
                 
-                string = "angle: " + str(self.angle) + " "
-                gs.conn.transport.write(string)
-
-                # Taking Shot
-                #newRect = self.rect.move(self.position)
-                #self.rect = newRect
-                #pygame.event.pump()
+                        string = "angle: " + str(self.angle) + " "
+                        gs.conn.transport.write(string)
+                # Taking shot
+                else:
+                        if self.position == (320, 390):
+                                # calculate speed
+                                self.speed = [(self.shotPosition[0]-320)/7.0, (self.shotPosition[1]-390)/7.0] 
+                        if self.rect.centery > self.shotPosition[1]:
+                                origPos = self.rect.center
+                                self.image, self.rect = scaleImage(self.defaultImage, 1-self.scale)
+                                self.scale = self.scale + 0.05
+                                self.rect.center = origPos
+                                newRect = self.rect.move(self.speed)
+                                self.rect = newRect
+                    
+                                
+                        string = "position: " + str(self.rect.centerx) + " " + str(self.rect.centery) + " "
+                        gs.conn.transport.write(string)
+                         
 
         def rotate(self):
                 self.image = pygame.transform.rotate(self.defaultImage, self.angle)
                 self.rect = self.image.get_rect(center = self.rect.center)
 
         def reset(self):
-                self.position = [320,400]
-
+                self.position = (320,390)
 
 class Gloves(pygame.sprite.Sprite):
 	def __init__(self, gs):
