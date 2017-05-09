@@ -80,7 +80,7 @@ class GameSpace:
 
 		#self.scored = False
 		#^^^ Might only need it in one of the files
-		self.score = [1, 2, 2, 0, 0]
+		#self.score = [1, 2, 2, 0, 0]
 
 		pygame.key.set_repeat()
 
