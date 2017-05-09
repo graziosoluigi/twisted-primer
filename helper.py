@@ -103,7 +103,7 @@ class Ball(pygame.sprite.Sprite):
                 self.position = (320,390)
 
 	def shot_fn(self, x, y):
-		if self.prev_shotPos == (x, y) or self.shot_result == 0:
+		if self.prev_shotPos == (x, y) and self.shot_result == 0:
 			if self.rect.left < 158 or self.rect.right > 485 or self.rect.top < 187 or self.rect.bottom > 362:
 				print "miss"
 				self.shot_result = 2
@@ -155,8 +155,8 @@ class ScoreBoard(pygame.sprite.Sprite):
 		self.shot_num = 0
 
 	def tick(self):
-		if self.gs.ball.shot != 0:
-			self.score[self.shot_num] = self.gs.ball.shot
+		if self.gs.ball.shot_result != 0:
+			self.score[self.shot_num] = self.gs.ball.shot_result
 
 
 		if self.score[0] == 1:
