@@ -119,6 +119,11 @@ class GameSpace:
 			self.screen.blit(self.scoreboard.shot5Image, self.scoreboard.shot5Rect)
 			self.sprites.draw(self.screen)
 			pygame.display.flip()
+        def reset(self):
+                self.sprites.remove(self.ball)
+                del self.ball
+                self.ball = Ball(self)
+                self.sprites.add(self.ball)
 
 #Main~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -110,11 +110,11 @@ class Ball(pygame.sprite.Sprite):
 			elif self.gs.gloves.rect.colliderect(self.rect):
 				print "Save"
 				self.shot_result = 2
-			else:
+                        else:
 				print "goal"
 				self.shot_result = 1
 			self.gs.conn.transport.write("dec: " + str(self.shot_result) + " ")
-		else:
+                elif shot_result == 0:
 			self.prev_shotPos = (x, y)
 			origPos = self.rect.center
 			self.image, self.rect = scaleImage(self.defaultImage, 1-self.scale)
@@ -156,9 +156,28 @@ class ScoreBoard(pygame.sprite.Sprite):
 
 	def tick(self):
 		if self.gs.ball.shot_result != 0:
-			self.score[self.shot_num] = self.gs.ball.shot_result
-
-
+		        if self.shot_num < 4:
+                                self.score[self.shot_num] = self.gs.ball.shot_result
+                                self.gs.reset()
+                        else:
+                                p1 = 0
+                                p2 = 0
+                                for i in self.score:
+                                        if i == 1:
+                                                p1 = p1 + 1
+                                        else:
+                                                p2 = p2 + 1
+                                if p1 > p2:
+                                        # display player 1 wins
+                                        self.winImage, self.winRect = loadImage("Player1wins.png")
+                                else:
+                                        # display player 2 wins
+                                        self.winImage, self.winRect = loadImage("Player2wins.png")
+                                        
+                                self.winRect.center = (320, 210)
+                                        
+                        self.shot_num = self.shot_num + 1
+                        
 		if self.score[0] == 1:
 			self.shot1Image = pygame.image.load("soccerball.png")
 			self.shot1Image, self.shot1Rect = scaleImage(self.shot1Image, .16)
@@ -213,6 +232,12 @@ class ScoreBoard(pygame.sprite.Sprite):
 			self.shot5Image = pygame.image.load("transparent_ball.png")
 			self.shot5Image, self.shot5Rect = scaleImage(self.shot5Image, .08)
 		self.shot5Rect.center = (465, 47)
+
+        def reset(self):
+                self.score = [0, 0, 0, 0, 0]
+                self.shot_num = 0
+
+ 
 
 
 
