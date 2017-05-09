@@ -31,9 +31,12 @@ class GameConnection(Protocol):
 			tmp_str = data.split(" ")
 			self.gs.ball.angle = float(tmp_str[1])
 			self.gs.ball.rotate()
-		if data.find("position: ") != -1:
-			tmp_str = data.split(" ")
-			self.gs.ball.shot(int(tmp_str[0], tmp_str[1])
+		try:
+			if data.find("position: ") != -1:
+				tmp_str = data.split(" ")
+				self.gs.ball.shot(int(tmp_str[0]), int(tmp_str[1]))
+		except ValueError:
+			pass
 
 
 class GameConnectionFactory(ClientFactory):
