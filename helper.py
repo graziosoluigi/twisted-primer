@@ -56,6 +56,7 @@ class Ball(pygame.sprite.Sprite):
                 self.speed = [0, 0]
                 self.angle = 0
                 self.shot = 0
+                self.shot_result = 0
                 self.shotPosition = 0, 0
                 self.scale = 0.05
 
@@ -102,17 +103,17 @@ class Ball(pygame.sprite.Sprite):
                 self.position = (320,390)
 
 	def shot_fn(self, x, y):
-		if self.prev_shotPos == (x, y) and self.shot == 0:
+		if self.prev_shotPos == (x, y) or self.shot_result == 0:
 			if self.rect.left < 158 or self.rect.right > 485 or self.rect.top < 187 or self.rect.bottom > 362:
 				print "miss"
-				self.shot = 2
+				self.shot_result = 2
 			elif self.gs.gloves.rect.colliderect(self.rect):
 				print "Save"
-				self.shot = 2
+				self.shot_result = 2
 			else:
 				print "goal"
-				self.shot = 1
-			self.gs.conn.transport.write("dec: " + str(self.shot) + " ")
+				self.shot_result = 1
+			self.gs.conn.transport.write("dec: " + str(self.shot_result) + " ")
 		else:
 			self.prev_shotPos = (x, y)
 			origPos = self.rect.center
@@ -155,60 +156,60 @@ class ScoreBoard(pygame.sprite.Sprite):
 
 	def tick(self):
 		if self.gs.ball.shot != 0:
-			self.gs.score[self.shot_num] = self.gs.ball.shot
+			self.score[self.shot_num] = self.gs.ball.shot
 
 
-		if self.gs.score[0] == 1:
+		if self.score[0] == 1:
 			self.shot1Image = pygame.image.load("soccerball.png")
 			self.shot1Image, self.shot1Rect = scaleImage(self.shot1Image, .16)
-		elif self.gs.score[0] == 2:
+		elif self.score[0] == 2:
 			self.shot1Image = pygame.image.load("miss.png")
 			self.shot1Image, self.shot1Rect = scaleImage(self.shot1Image, .17)
-		elif self.gs.score[0] == 0:
+		elif self.score[0] == 0:
 			self.shot1Image = pygame.image.load("transparent_ball.png")
 			self.shot1Image, self.shot1Rect = scaleImage(self.shot1Image, .08)
 		self.shot1Rect.center = (265, 47)
 
-		if self.gs.score[1] == 1:
+		if self.score[1] == 1:
 			self.shot2Image = pygame.image.load("soccerball.png")
 			self.shot2Image, self.shot2Rect = scaleImage(self.shot2Image, .16)
-		elif self.gs.score[1] == 2:
+		elif self.score[1] == 2:
 			self.shot2Image = pygame.image.load("miss.png")
 			self.shot2Image, self.shot2Rect = scaleImage(self.shot2Image, .17)
-		elif self.gs.score[1] == 0:
+		elif self.score[1] == 0:
 			self.shot2Image = pygame.image.load("transparent_ball.png")
 			self.shot2Image, self.shot2Rect = scaleImage(self.shot2Image, .08)
 		self.shot2Rect.center = (315, 47)
 
-		if self.gs.score[2] == 1:
+		if self.score[2] == 1:
 			self.shot3Image = pygame.image.load("soccerball.png")
 			self.shot3Image, self.shot3Rect = scaleImage(self.shot3Image, .16)
-		elif self.gs.score[2] == 2:
+		elif self.score[2] == 2:
 			self.shot3Image = pygame.image.load("miss.png")
 			self.shot3Image, self.shot3Rect = scaleImage(self.shot3Image, .17)
-		elif self.gs.score[2] == 0:
+		elif self.score[2] == 0:
 			self.shot3Image = pygame.image.load("transparent_ball.png")
 			self.shot3Image, self.shot3Rect = scaleImage(self.shot3Image, .08)
 		self.shot3Rect.center = (365, 47)
 
-		if self.gs.score[3] == 1:
+		if self.score[3] == 1:
 			self.shot4Image = pygame.image.load("soccerball.png")
 			self.shot4Image, self.shot4Rect = scaleImage(self.shot4Image, .16)
-		elif self.gs.score[3] == 2:
+		elif self.score[3] == 2:
 			self.shot4Image = pygame.image.load("miss.png")
 			self.shot4Image, self.shot4Rect = scaleImage(self.shot4Image, .17)
-		elif self.gs.score[3] == 0:
+		elif self.score[3] == 0:
 			self.shot4Image = pygame.image.load("transparent_ball.png")
 			self.shot4Image, self.shot4Rect = scaleImage(self.shot4Image, .08)
 		self.shot4Rect.center = (415, 47)
 
-		if self.gs.score[4] == 1:
+		if self.score[4] == 1:
 			self.shot5Image = pygame.image.load("soccerball.png")
 			self.shot5Image, self.shot5Rect = scaleImage(self.shot5Image, .16)
-		elif self.gs.score[4] == 2:
+		elif self.score[4] == 2:
 			self.shot5Image = pygame.image.load("miss.png")
 			self.shot5Image, self.shot5Rect = scaleImage(self.shot5Image, .17)
-		elif self.gs.score[4] == 0:
+		elif self.score[4] == 0:
 			self.shot5Image = pygame.image.load("transparent_ball.png")
 			self.shot5Image, self.shot5Rect = scaleImage(self.shot5Image, .08)
 		self.shot5Rect.center = (465, 47)

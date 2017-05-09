@@ -38,7 +38,9 @@ class GameConnection(Protocol):
                 try:
                         if data.find("dec: ") != -1:
                                 tmp_str = data.split(" ")
-                                self.gs.ball.shot = int(tmp_str[1])
+                                self.gs.ball.shot_result = int(tmp_str[1])
+                except ValueError:
+                        pass
 
 
 class GameConnectionFactory(Factory):
