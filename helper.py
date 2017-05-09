@@ -66,7 +66,7 @@ class Ball(pygame.sprite.Sprite):
                 # Movement
                 self.rect = self.image.get_rect(center = self.rect.center)
                 
-                string = "angle: " +  self.angle + " "
+                string = "angle: " + str(self.angle) + " "
                 gs.conn.transport.write(string)
 
                 # Taking Shot
