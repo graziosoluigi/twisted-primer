@@ -35,6 +35,11 @@ class GameConnection(Protocol):
 		except AttributeError:
 			pass
 
+                try:
+                        if data.find("dec: ") != -1:
+                                tmp_str = data.split(" ")
+                                self.gs.ball.shot = int(tmp_str[1])
+
 
 class GameConnectionFactory(Factory):
 	def __init__(self, gs):
@@ -75,7 +80,7 @@ class GameSpace:
                 self.sprites.add(self.gloves)
 
 		#self.scored = False
-		self.score = [1, 2, 2, 0, 0]
+		#self.score = [1, 2, 2, 0, 0]
 
 		pygame.key.set_repeat()
 
