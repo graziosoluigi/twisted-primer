@@ -27,14 +27,17 @@ class GameConnection(Protocol):
 			pygame.quit()
 			reactor.stop()
 			os._exit(1)
-		if data.find("angle: ") != -1:
-			tmp_str = data.split(" ")
-			self.gs.ball.angle = float(tmp_str[1])
-			self.gs.ball.rotate()
+		try:
+			if data.find("angle: ") != -1:
+				tmp_str = data.split(" ")
+				self.gs.ball.angle = float(tmp_str[1])
+				self.gs.ball.rotate()
+		except AttributeError:
+			pass
 		try:
 			if data.find("position: ") != -1:
 				tmp_str = data.split(" ")
-				self.gs.ball.shot(int(tmp_str[0]), int(tmp_str[1]))
+				self.gs.ball.shot_fn(int(tmp_str[1]), int(tmp_str[2]))
 		except ValueError:
 			pass
 
@@ -96,7 +99,7 @@ class GameSpace:
 					print("Player 2: Mouse Click")
 					#conn.transport.write("Click on P2")
 
-			self.gloves.tick(self)
+			self.gloves.tick()
 			self.scoreboard.tick()
 
 

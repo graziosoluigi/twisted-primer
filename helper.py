@@ -101,17 +101,16 @@ class Ball(pygame.sprite.Sprite):
         def reset(self):
                 self.position = (320,390)
 
-	def shot(self, x, y):
-		if prev_shotPos == (x, y):
-			if self.rect.left < 158 or self.rect.right > 485:
+	def shot_fn(self, x, y):
+		if self.prev_shotPos == (x, y):
+			if self.rect.left < 158 or self.rect.right > 485 or self.rect.top < 187 or self.rect.bottom > 362:
 				print "miss"
-			if self.rect.top < 187 or self.rect.bottom > 362:
-				print "miss"
-			if self.gs.gloves.rect.colliderect(self.rect):
+			elif self.gs.gloves.rect.colliderect(self.rect):
 				print "Save"
-			print "goal"
+			else:
+				print "goal"
 		else:
-			prev_shotPos = (x, y)
+			self.prev_shotPos = (x, y)
 			origPos = self.rect.center
 			self.image, self.rect = scaleImage(self.defaultImage, 1-self.scale)
 			self.scale = self.scale + 0.05
@@ -120,20 +119,21 @@ class Ball(pygame.sprite.Sprite):
 
 class Gloves(pygame.sprite.Sprite):
 	def __init__(self, gs):
+		self.gs = gs
 		pygame.sprite.Sprite.__init__(self)
 		self.image = pygame.image.load("gloves.png")
 		self.image, self.rect = scaleImage(self.image, .08)
 		self.rect.center = (320, 210)
 
-	def tick(self, gs):
+	def tick(self):
 		'''Gloves tick:		-move gloves based on mouse
 					-sends info to connection'''
-		gs.count = gs.count + 1
+		self.gs.count = gs.count + 1
 		self.rect.center = pygame.mouse.get_pos()
 		#if gs.count > 5 :
 		string = "glove: "+str(self.rect.centerx)+" "+str(self.rect.centery)+" "
-		gs.count = 0
-		gs.conn.transport.write(string)
+		self.gs.count = 0
+		self.gs.conn.transport.write(string)
 
 	def move(self, x, y):
 		self.rect.center = (x, y)
