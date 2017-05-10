@@ -97,13 +97,10 @@ class Ball(pygame.sprite.Sprite):
 	def shot_fn(self, x, y):
 		if self.prev_shotPos == (x, y) and self.shot_result == 0:
 			if self.rect.left < 158 or self.rect.right > 485 or self.rect.top < 187 or self.rect.bottom > 362:
-				print "miss"
 				self.shot_result = 2
 			elif self.gs.gloves.rect.colliderect(self.rect):
-				print "Save"
 				self.shot_result = 2
                         else:
-				print "goal"
 				self.shot_result = 1
                         # send shot result to player 1
 			self.gs.conn.transport.write("dec: " + str(self.shot_result) + " ")

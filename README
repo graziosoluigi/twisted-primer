@@ -1,0 +1,27 @@
+Names:		Luigi Grazioso
+		Aron Lam
+
+Date:		May 5th, 2017
+
+Assignment:	Twisted+Pygame
+
+Main Features of our Game:
+	Multi-player soccer penalty kick game, where one player
+	is the goalie and the other is the shooter, each round
+	consists of 5 shots. To alternate roles, one has to quit
+	game and restart by running the other .py file.
+
+
+Tutorial:
+	1.	Run "python player1.py"
+	2.	Run "python player2.py"
+	3.	A pygame window will open for each player,
+		player1 is the kicker and player2 is the Goalie.
+	4.	player1 clicks where he wants to shoot, player2
+		places mouse(gloves), where he wants to block
+	5.	After 5 shots the players get the option to restart
+		the game, if either player decides to restart the game,
+		it is restarted for both players.
+	6.	To quit or exit at any time, close pygame window
+		or hit escape key.
+
