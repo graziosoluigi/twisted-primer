@@ -22,11 +22,12 @@ class GameConnection(Protocol):
 		self.t = Thread(target=self.gs.main, args=(self, )).start()
 
 	def dataReceived(self, data):
-		#print "Data:", data
 		if data == "quit":
 			pygame.quit()
 			reactor.stop()
 			os._exit(1)
+
+                # Receive gloves data
 		try:
 			if self.gs.gloves != None and data.find("glove: ") != -1:
 				tmp_str = data.split(" ")
@@ -36,6 +37,7 @@ class GameConnection(Protocol):
 		except AttributeError:
 			pass
 
+                # Receive shot decision data
                 try:
                         if data.find("dec: ") != -1:
                                 tmp_str = data.split(" ")
@@ -43,10 +45,10 @@ class GameConnection(Protocol):
                 except ValueError:
                         pass
 
+                # Receive reset data
                 if data == "RESET":
                         self.gs.resetBall()
                         self.gs.scoreboard.reset()
-
 
 class GameConnectionFactory(Factory):
 	def __init__(self, gs):
@@ -62,6 +64,7 @@ class GameSpace:
 	def main(self, conn):
 		self.conn = conn
 		pygame.init()
+                self.clock = pygame.time.Clock()
 
 		#Background, screen, and Goal
 		self.size = self.width, self.height = 640, 420
@@ -74,36 +77,29 @@ class GameSpace:
 		self.goalImage, self.goalRect = loadImage("goal.png")
 		self.goalImage, self.goalRect = scaleImage(self.goalImage, 0.55)
 		self.goalRect.center = (320,270)
-
-
-		#init all game objects (shooter and goalkeeper)
-
-		self.clock = pygame.time.Clock()
-		self.sprites = pygame.sprite.Group()
-                self.ball = Ball(self)
+                self.scoreboard = ScoreBoard(self)
+                
+		# Init moving game objects
+		self.ball = Ball(self)
 		self.gloves = Gloves(self)
-		self.scoreboard = ScoreBoard(self)
+
+                # sprites
+                self.sprites = pygame.sprite.Group()
                 self.sprites.add(self.ball)
                 self.sprites.add(self.gloves)
 
-		#self.scored = False
-		#self.score = [1, 2, 2, 0, 0]
-
 		pygame.key.set_repeat()
-
-
+                
+                # Main game loop
 		while 1:
 			self.clock.tick(60);
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
+                                        conn.transport.write("quit")
 					reactor.stop()
 					pygame.quit()
-					conn.transport.write("quit")
 					os._exit(1)
-				elif event.type == MOUSEBUTTONDOWN:
-					#print("Player 1: Mouse Click")
-					#conn.transport.write("Click on P1")
-					#print("Clicks on:", pygame.mouse.get_pos())
+				elif event.type == MOUSEBUTTONDOWN:	
                                         if self.ball.shot == 0:
                                                 self.ball.shot = 1
                                                 self.ball.shotPosition = pygame.mouse.get_pos()
@@ -128,6 +124,7 @@ class GameSpace:
 			self.screen.blit(self.scoreboard.shot4Image, self.scoreboard.shot4Rect)
 			self.screen.blit(self.scoreboard.shot5Image, self.scoreboard.shot5Rect)
                         
+                        # Display win message when necessary
                         try:
                                 self.screen.blit(self.scoreboard.winImage, self.scoreboard.winRect)
                         except AttributeError:
