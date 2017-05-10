@@ -114,7 +114,7 @@ class Ball(pygame.sprite.Sprite):
 				print "goal"
 				self.shot_result = 1
 			self.gs.conn.transport.write("dec: " + str(self.shot_result) + " ")
-                elif shot_result == 0:
+                elif self.shot_result == 0:
 			self.prev_shotPos = (x, y)
 			origPos = self.rect.center
 			self.image, self.rect = scaleImage(self.defaultImage, 1-self.scale)
@@ -156,10 +156,11 @@ class ScoreBoard(pygame.sprite.Sprite):
 
 	def tick(self):
 		if self.gs.ball.shot_result != 0:
-		        if self.shot_num < 4:
+		        if self.shot_num <= 4:
                                 self.score[self.shot_num] = self.gs.ball.shot_result
-                                self.gs.reset()
-                        else:
+				if self.shot_num < 4:
+					self.gs.resetBall()
+                        if self.shot_num >= 4:
                                 p1 = 0
                                 p2 = 0
                                 for i in self.score:
@@ -173,7 +174,8 @@ class ScoreBoard(pygame.sprite.Sprite):
                                 else:
                                         # display player 2 wins
                                         self.winImage, self.winRect = loadImage("Player2wins.png")
-                                        
+
+				self.winImage, self.winRect = scaleImage(self.winImage, .5)
                                 self.winRect.center = (320, 210)
                                         
                         self.shot_num = self.shot_num + 1
@@ -236,6 +238,8 @@ class ScoreBoard(pygame.sprite.Sprite):
         def reset(self):
                 self.score = [0, 0, 0, 0, 0]
                 self.shot_num = 0
+		del self.winImage
+		del self.winRect
 
  
 

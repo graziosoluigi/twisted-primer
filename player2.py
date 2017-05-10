@@ -9,6 +9,7 @@ from twisted.internet.protocol import ClientFactory
 from twisted.internet.protocol import Protocol
 from twisted.internet import reactor
 from threading import Thread
+import time
 
 
 
@@ -40,6 +41,9 @@ class GameConnection(Protocol):
 				self.gs.ball.shot_fn(int(tmp_str[1]), int(tmp_str[2]))
 		except ValueError:
 			pass
+		if data == "RESET":
+			self.gs.resetBall()
+			self.gs.scoreboard.reset()
 
 
 class GameConnectionFactory(ClientFactory):
@@ -93,11 +97,13 @@ class GameSpace:
 				if event.type == pygame.QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
 					reactor.stop()
 					pygame.quit()
-					conn.transport.write("quit")
+					self.conn.transport.write("quit")
 					os._exit(1)
-				elif event.type == MOUSEBUTTONDOWN:
-					print("Player 2: Mouse Click")
-					#conn.transport.write("Click on P2")
+				elif event.type == KEYDOWN and event.key == K_SPACE and self.scoreboard.shot_num > 4:
+					self.resetBall()
+					self.scoreboard.reset()
+					self.conn.transport.write("RESET")
+					time.sleep(.1)
 
 			self.gloves.tick()
 			self.scoreboard.tick()
@@ -114,10 +120,15 @@ class GameSpace:
 			self.screen.blit(self.scoreboard.shot4Image, self.scoreboard.shot4Rect)
 			self.screen.blit(self.scoreboard.shot5Image, self.scoreboard.shot5Rect)
 			#self.screen.blit(self.gloves.image, sel)
+			try:
+				self.screen.blit(self.scoreboard.winImage, self.scoreboard.winRect)
+			except AttributeError:
+				pass
+
 			self.sprites.draw(self.screen)
 			pygame.display.flip()
 
-	def reset(self):
+	def resetBall(self):
 		self.sprites.remove(self.ball)
 		del self.ball
 		self.ball = Ball(self)
