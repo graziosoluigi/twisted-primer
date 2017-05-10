@@ -3,6 +3,7 @@
 #	Twisted Pygame (player1.py)
 
 import sys, pygame, os
+import time
 from helper import *
 from pygame.locals import *
 from twisted.internet.protocol import Factory
@@ -41,6 +42,10 @@ class GameConnection(Protocol):
                                 self.gs.ball.shot_result = int(tmp_str[1])
                 except ValueError:
                         pass
+
+                if data == "RESET":
+                        self.gs.resetBall()
+                        self.gs.scoreboard.reset()
 
 
 class GameConnectionFactory(Factory):
@@ -102,12 +107,17 @@ class GameSpace:
                                         if self.ball.shot == 0:
                                                 self.ball.shot = 1
                                                 self.ball.shotPosition = pygame.mouse.get_pos()
+                                elif event.type == KEYDOWN and event.key == K_SPACE and self.scoreboard.shot_num > 4:
+                                        self.resetBall()        
+                                        self.scoreboard.reset()
+                                        self.conn.transport.write("RESET")
                                                 
-                                            
+                                                
+                        # Ticks             
 			self.scoreboard.tick()
                         self.ball.tick()
 
-			#self.screen.blit(self.players.image, self.players.rect)
+			# Display Images
 			self.screen.blit(self.bgImage, self.bgRect)
 			self.screen.blit(self.ball.image, self.ball.rect)
                         self.screen.blit(self.goalImage, self.goalRect)
@@ -117,9 +127,16 @@ class GameSpace:
 			self.screen.blit(self.scoreboard.shot3Image, self.scoreboard.shot3Rect)
 			self.screen.blit(self.scoreboard.shot4Image, self.scoreboard.shot4Rect)
 			self.screen.blit(self.scoreboard.shot5Image, self.scoreboard.shot5Rect)
+                        
+                        try:
+                                self.screen.blit(self.scoreboard.winImage, self.scoreboard.winRect)
+                        except AttributeError:
+                                pass
+
 			self.sprites.draw(self.screen)
 			pygame.display.flip()
-        def reset(self):
+
+        def resetBall(self):
                 self.sprites.remove(self.ball)
                 del self.ball
                 self.ball = Ball(self)
